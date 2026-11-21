@@ -2,13 +2,17 @@ name: Record Bazaar prices
 
 on:
   schedule:
-    - cron: '17 * * * *'     # every hour at :17 (GitHub may start it a few minutes late)
+    # 4 times an hour at quiet minutes: GitHub skips many scheduled runs, so more tries = no missing hours.
+    # Runs in the same hour are averaged together.
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:          # lets you run it by hand from the Actions tab
 
 permissions:
   contents: write             # needed to save the history file
 
-concurrency: record
+concurrency:
+  group: record
+  cancel-in-progress: false   # never interrupt a run that's saving
 
 jobs:
   record:
